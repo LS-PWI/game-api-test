@@ -1,72 +1,59 @@
 <script>
-export default{
+export default {
     data() {
         return {
             playerName: "",
             password: "",
             img: "",
-
-            response:"",
+            banner: "",
         }
     },
     methods: {
+        register() {
+            const createUserRequest = { player_ID: this.playerName, password: this.password, img: this.img };
+            fetch("https://balandrau.salle.url.edu/i3/players", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(createUserRequest)
+            }).then((response) => {
+                if (response.ok) {
+                    this.response = "Player created!";
+                    return response;
+                }
 
-        async register(){
-            
-            const user = {player_ID:this.playerName, password:this.password, img:this.img};
-
-            try{
-                await fetch("https://balandrau.salle.url.edu/i3/players", {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(user)
-                
-                }).then((response) =>{   
-                    if(response.ok){
-                        this.response = "Player created! ";
-                        return response;
-                    }
-
-                    return response.json();
-                    
-                }).then((res) => {
-    
-                    if(res.ok == undefined){
-                        this.response = res.error.message;
-                    }
-
-                });
-                
-            }catch(error){
-                this.response = "Lost API connection :(";
-            }
-           
+                return response.json();
+            }).then((res) => {
+                if (res.ok == undefined) {
+                    this.response = res.error.message;
+                }
+            }).catch((error) => {
+                this.response = "No connection with API";
+            });
         }
     }
 }
-
 </script>
 
 <template>
-    
-    <div style="display:flex; flex-direction:column">
-        <h2>REGISTER</h2>
-   
-        <input type="text" placeholder="PlayerName" name="PlayerName" v-model = "playerName">
-        <input type="password" placeholder="Password" name="Password" v-model = "password" v-on:keyup.enter="register">
-        <input type="text" placeholder="Image URL" name="img" v-model = "img">
+    <main style="display:flex; flex-direction:column">
+        <section>
+            <h2>Register</h2>
 
-        <input type="submit" v-on:click.prevent="register()" value="Register">
+            <form style="display:flex; flex-direction:column">
+                <input type="text" placeholder="PlayerName" name="PlayerName" v-model="playerName">
+                <input type="password" placeholder="Password" name="Password" v-model="password">
+                <input type="text" placeholder="Image URL" name="img" v-model="img">
 
-        <p><br>{{ response }}</p>
-        
-        <div class="register_here">
-            <p>Already Registered?</p>
-            <router-link to="/Login" id="button">Login here</router-link>
-        </div>
+                <input type="submit" v-on:click.prevent="register()" value="Register">
+            </form>
 
-        
-
-    </div>
-
+            <p>{{ response }}</p>
+        </section>
+        <section>
+            <div>
+                <p>Already Registered?</p>
+                <router-link to="/Login" id="button">Login here</router-link>
+            </div>
+        </section>
+    </main>
 </template>
